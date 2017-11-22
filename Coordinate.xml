@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <java version="1.8.0_144" class="java.beans.XMLDecoder">
  <object class="danil.ClassData">
+  <void property="classNames">
+   <object class="java.util.ArrayList">
+    <void method="add">
+     <string>Patient</string>
+    </void>
+   </object>
+  </void>
   <void property="fields">
-   <array class="java.lang.String" length="2">
+   <array class="java.lang.String" length="3">
     <void index="0">
-     <string>x</string>
+     <string>x : int</string>
     </void>
     <void index="1">
-     <string>y</string>
+     <string>y : int</string>
+    </void>
+    <void index="2">
+     <string>patient : Patient</string>
     </void>
    </array>
   </void>
@@ -20,7 +30,7 @@
      <string>toString: public</string>
     </void>
     <void index="1">
-     <string>getX: public</string>
+     <string>dummyPrivate: private</string>
     </void>
     <void index="2">
      <string>getY: public</string>
@@ -29,7 +39,7 @@
      <string>compareCoord: public</string>
     </void>
     <void index="4">
-     <string>dummyPrivate: private</string>
+     <string>getX: public</string>
     </void>
    </array>
   </void>
@@ -37,7 +47,7 @@
    <string>Coordinate</string>
   </void>
   <void property="superClassName">
-   <string>Object</string>
+   <string>javax.swing.JPanel</string>
   </void>
  </object>
 </java>

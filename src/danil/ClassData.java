@@ -1,5 +1,7 @@
 package danil;
 
+import java.util.ArrayList;
+
 /**
  * Created by danil on 11/21/17.
  */
@@ -12,6 +14,7 @@ public class ClassData {
     private String[] methods;
     private String[] providers;
     private String[] clients;
+    private ArrayList<String> classNames;
 
     public ClassData(){
 
@@ -36,6 +39,10 @@ public class ClassData {
 
     public String[] getMethods() {
         return methods;
+    }
+
+    public ArrayList<String> getClassNames() {
+        return classNames;
     }
 
     public String[] getProviders() {
@@ -69,6 +76,10 @@ public class ClassData {
         this.methods = methods;
     }
 
+    public void setClassNames(ArrayList<String> classNames) {
+        this.classNames = classNames;
+    }
+
     public void setProviders(String[] providers) {
         this.providers = providers;
     }
@@ -79,55 +90,71 @@ public class ClassData {
 
 
 
+    public void printProviders(){
+        ArrayList<String> temp = getClassNames();
+        System.out.print("\nProviders: \n");
+
+        if(temp!=null){
+            for(String s: temp){
+                System.out.println("    "+s);
+            }
+        }
+        else{
+            System.out.print("No classes declared.");
+        }
+
+    }
+
     public void printFields(){
+        System.out.print("\nFields: ");
         String[] s = getFields();
         for(String m: s){
             System.out.print("\n    "+m);
         }
-        System.out.print("\n    ..... .\n");
+        //System.out.print("\n    ..... .\n");
     }
 
     public void printMethods(){
+        System.out.print("\nMethods: ");
         String[] s = getMethods();
         for(String m: s){
             System.out.print("\n    "+m);
         }
-        System.out.print("\n    ..... .\n");
+        //System.out.print("\n    ..... .\n");
     }
 
     public void printInterfaces(){
+        System.out.print("\nInterfaces: ");
         String[] interfaces = getInterfaces();
         if(interfaces!=null){
             for(String s: interfaces){
-                System.out.print(s);
+                System.out.println("    "+s);
             }
         }
-        else{
-            System.out.print("Nothing");
+        else if(interfaces.length==0||interfaces.equals("Object")){
+            System.out.print("None");
         }
 
     }
 
     public void printSuperclass(){
-        if(getSuperClassName().equals("Object")){
-            System.out.print("Nothing");
+        System.out.print("\nSuperclass: ");
+        if(getSuperClassName().equals("java.lang.Object")){
+            System.out.print("None");
         }
         else{
-            System.out.print("\n"+getSuperClassName());
+            System.out.print(getSuperClassName());
         }
     }
 
     public void printClass(){
         System.out.print("\nClass Details: ");
         System.out.print("\nName: "+getName());
-        System.out.print("\nSuperclass: ");
         printSuperclass();
-        System.out.print("\nInterfaces: ");
         printInterfaces();
-        System.out.print("\nFields: ");
         printFields();
-        System.out.print("\nMethods: ");
         printMethods();
+        printProviders();
 
     }
 

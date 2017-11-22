@@ -1,5 +1,7 @@
 package danil;
 
+import com.sun.tools.internal.jxc.gen.config.Classes;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -28,6 +30,10 @@ public class ClassLoader {
     }
 
     /** Getters */
+    public ArrayList<String> getClassNames(){
+        return classes;
+    }
+
     public int getNumberOfClasses(){
         return numberOfClasses;
     }
@@ -60,25 +66,34 @@ public class ClassLoader {
 
         File f = new File(path);
         int i = 1;
-        // Go through class files and remove .class extension; Fill up HashMap
+        // Go through class files and remove .class extension; Fill up ArrayList with class names
         for ( File file : f.listFiles(classFilter) ) {
             //System.out.println(i+". "+file.getName().replace(".class", ""));
             String fileName = file.getName().replace(".class", "");
             setClassNameTag(i,fileName);
+            i++;
+        }
+        setNumberOfClasses(i);
+
+
+        // Build preliminary HashMap: No clients
+        for(File file: f.listFiles(classFilter)){
+            String fileName = file.getName().replace(".class", "");
+
             Class c = loadClass(fileName,path);
             String className = loadName(c);
             String superClassName = loadSuperClassName(c);
             String[] classInterface = loadInterfaces(c);
             String[] classFields = loadFields(c);
             String[] classMethods = loadMethods(c);
-            generateClassData(className,superClassName,classInterface,classFields,classMethods);
-
-            i++;
+            ArrayList<String> providers = loadProviders(c);
+            generateClassData(className,superClassName,classInterface,classFields,classMethods, providers);
         }
-        setNumberOfClasses(i);
+
+        // TODO: Iterate HashTable and insert clients for each object
     }
 
-    public void generateClassData(String name, String superClassName, String[] interfaces, String[] fields, String[] methods){
+    public void generateClassData(String name, String superClassName, String[] interfaces, String[] fields, String[] methods, ArrayList<String> classNames){
 
         ClassData newClass = new ClassData();
         newClass.setName(name);
@@ -86,6 +101,7 @@ public class ClassLoader {
         newClass.setInterfaces(interfaces);
         newClass.setFields(fields);
         newClass.setMethods(methods);
+        newClass.setClassNames(classNames);
 
         map.put(name,newClass);
     }
@@ -107,7 +123,7 @@ public class ClassLoader {
         String[] results = new String[fields.length];
         int i = 0;
         for (Field field: fields) {
-            results[i] = field.getName();
+            results[i] = field.getName()+" : "+field.getType().getSimpleName();
             i++;
         }
         return results;
@@ -132,7 +148,7 @@ public class ClassLoader {
     }
 
     private String loadSuperClassName(Class c){
-        String result = c.getSuperclass().getSimpleName();
+        String result = c.getSuperclass().getName();
         return result;
     }
 
@@ -142,10 +158,48 @@ public class ClassLoader {
 
         int i = 0;
         for(Class cl: interfaces){
-            result[i] = cl.getName();
+            result[i] = cl.getSimpleName();
+            i++;
         }
         return result;
     }
+
+
+    private ArrayList<String> loadProviders(Class c){
+        ArrayList<String> classNames = getClassNames();
+        ArrayList<String> types = new ArrayList<>();
+        ArrayList<String> providers = new ArrayList<>();
+
+        Field[] fields = c.getDeclaredFields();
+
+
+        for(Field field: fields){ // Traverse through declared fields of class c: add each tyoe to types ArrayList
+            String type = field.getType().getSimpleName();
+            types.add(type);
+        }
+
+        for(String str: types){
+
+            for(String cl: classNames){
+                if(str.equals(cl)){
+                    providers.add(str);
+                }
+            }
+        }
+        return providers;
+
+    }
+
+    private String[] loadClients(Class c){
+        String myName = c.getName();
+        String[] providers = null;
+
+
+        return providers;
+    }
+
+
+
 
     public void printArrayList(){
         for(int i = 1; i < classes.size(); i++){

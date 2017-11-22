@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <java version="1.8.0_144" class="java.beans.XMLDecoder">
  <object class="danil.ClassData">
+  <void property="classNames">
+   <object class="java.util.ArrayList">
+    <void method="add">
+     <string>Coordinate</string>
+    </void>
+   </object>
+  </void>
   <void property="fields">
-   <array class="java.lang.String" length="3">
+   <array class="java.lang.String" length="4">
     <void index="0">
-     <string>hello</string>
+     <string>hello : String</string>
     </void>
     <void index="1">
-     <string>name</string>
+     <string>name : String</string>
     </void>
     <void index="2">
-     <string>priority</string>
+     <string>priority : int</string>
+    </void>
+    <void index="3">
+     <string>coordinate : Coordinate</string>
     </void>
    </array>
   </void>
@@ -31,7 +41,7 @@
    <string>Patient</string>
   </void>
   <void property="superClassName">
-   <string>Object</string>
+   <string>java.lang.Object</string>
   </void>
  </object>
 </java>
