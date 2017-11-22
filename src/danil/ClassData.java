@@ -12,9 +12,8 @@ public class ClassData {
     private String[] methods;
     private String[] providers;
     private String[] clients;
-    private int number;
 
-    ClassData(){
+    public ClassData(){
 
     }
     /** Getters */
@@ -47,15 +46,8 @@ public class ClassData {
         return clients;
     }
 
-    public int getNumber() {
-        return number;
-    }
 
     /** Setters */
-
-    public void setNumber(int number) {
-        this.number = number;
-    }
 
     public void setName(String name) {
         this.name = name;
@@ -137,5 +129,11 @@ public class ClassData {
         System.out.print("\nMethods: ");
         printMethods();
 
+    }
+
+    @Override
+    public String toString(){
+        String result = getName()+"Fields: ";
+        return result;
     }
 }

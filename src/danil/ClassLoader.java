@@ -21,14 +21,12 @@ public class ClassLoader {
 
     static private HashMap<String,ClassData> map = new HashMap<>();
     private int numberOfClasses;
-    private ArrayList<String> classes = new ArrayList<>(10);
-
+    private ArrayList<String> classes = new ArrayList<>();
 
     private void initList(){
-        for(int i = 0; i<10;i++){
-            classes.add(i,null);
-        }
+            classes.add(0,null);
     }
+
     /** Getters */
     public int getNumberOfClasses(){
         return numberOfClasses;
@@ -73,17 +71,16 @@ public class ClassLoader {
             String[] classInterface = loadInterfaces(c);
             String[] classFields = loadFields(c);
             String[] classMethods = loadMethods(c);
-            generateClassData(i,className,superClassName,classInterface,classFields,classMethods);
+            generateClassData(className,superClassName,classInterface,classFields,classMethods);
 
             i++;
         }
         setNumberOfClasses(i);
     }
 
-    public void generateClassData(int position, String name, String superClassName, String[] interfaces, String[] fields, String[] methods){
+    public void generateClassData(String name, String superClassName, String[] interfaces, String[] fields, String[] methods){
 
         ClassData newClass = new ClassData();
-        newClass.setNumber(position);
         newClass.setName(name);
         newClass.setSuperClassName(superClassName);
         newClass.setInterfaces(interfaces);

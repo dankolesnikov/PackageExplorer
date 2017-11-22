@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.8.0_144" class="java.beans.XMLDecoder">
+ <object class="danil.ClassData">
+  <void property="fields">
+   <array class="java.lang.String" length="2">
+    <void index="0">
+     <string>x</string>
+    </void>
+    <void index="1">
+     <string>y</string>
+    </void>
+   </array>
+  </void>
+  <void property="interfaces">
+   <array class="java.lang.String" length="0"/>
+  </void>
+  <void property="methods">
+   <array class="java.lang.String" length="5">
+    <void index="0">
+     <string>toString: public</string>
+    </void>
+    <void index="1">
+     <string>getX: public</string>
+    </void>
+    <void index="2">
+     <string>getY: public</string>
+    </void>
+    <void index="3">
+     <string>compareCoord: public</string>
+    </void>
+    <void index="4">
+     <string>dummyPrivate: private</string>
+    </void>
+   </array>
+  </void>
+  <void property="name">
+   <string>Coordinate</string>
+  </void>
+  <void property="superClassName">
+   <string>Object</string>
+  </void>
+ </object>
+</java>
