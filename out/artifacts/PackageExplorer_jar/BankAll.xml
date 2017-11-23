@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.8.0_144" class="java.beans.XMLDecoder">
+ <object class="java.util.HashMap">
+  <void method="put">
+   <string>GUI</string>
+   <object class="danil.ClassData">
+    <void property="clients">
+     <object class="java.util.ArrayList">
+      <void method="add">
+       <string>Main</string>
+      </void>
+     </object>
+    </void>
+    <void property="fields">
+     <array class="java.lang.String" length="3">
+      <void index="0">
+       <string>panel : JPanel</string>
+      </void>
+      <void index="1">
+       <string>name : String</string>
+      </void>
+      <void index="2">
+       <string>c : Contract</string>
+      </void>
+     </array>
+    </void>
+    <void property="interfaces">
+     <array class="java.lang.String" length="0"/>
+    </void>
+    <void property="methods">
+     <array class="java.lang.String" length="1">
+      <void index="0">
+       <string>draw: </string>
+      </void>
+     </array>
+    </void>
+    <void property="name">
+     <string>GUI</string>
+    </void>
+    <void property="providers">
+     <object class="java.util.ArrayList">
+      <void method="add">
+       <string>Contract</string>
+      </void>
+     </object>
+    </void>
+    <void property="superClassName">
+     <string>javax.swing.JFrame</string>
+    </void>
+   </object>
+  </void>
+  <void method="put">
+   <string>Contract</string>
+   <object class="danil.ClassData">
+    <void property="clients">
+     <object class="java.util.ArrayList">
+      <void method="add">
+       <string>GUI</string>
+      </void>
+     </object>
+    </void>
+    <void property="fields">
+     <array class="java.lang.String" length="0"/>
+    </void>
+    <void property="interfaces">
+     <array class="java.lang.String" length="0"/>
+    </void>
+    <void property="methods">
+     <array class="java.lang.String" length="0"/>
+    </void>
+    <void property="name">
+     <string>Contract</string>
+    </void>
+    <void property="providers">
+     <object class="java.util.ArrayList"/>
+    </void>
+   </object>
+  </void>
+  <void method="put">
+   <string>Main</string>
+   <object class="danil.ClassData">
+    <void property="clients">
+     <object class="java.util.ArrayList"/>
+    </void>
+    <void property="fields">
+     <array class="java.lang.String" length="3">
+      <void index="0">
+       <string>g : GUI</string>
+      </void>
+      <void index="1">
+       <string>i : int</string>
+      </void>
+      <void index="2">
+       <string>name : String</string>
+      </void>
+     </array>
+    </void>
+    <void property="interfaces">
+     <array class="java.lang.String" length="1">
+      <void index="0">
+       <string>Contract</string>
+      </void>
+     </array>
+    </void>
+    <void property="methods">
+     <array class="java.lang.String" length="1">
+      <void index="0">
+       <string>deposit: </string>
+      </void>
+     </array>
+    </void>
+    <void property="name">
+     <string>Main</string>
+    </void>
+    <void property="providers">
+     <object class="java.util.ArrayList">
+      <void method="add">
+       <string>GUI</string>
+      </void>
+     </object>
+    </void>
+    <void property="superClassName">
+     <string>java.lang.Object</string>
+    </void>
+   </object>
+  </void>
+ </object>
+</java>

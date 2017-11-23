@@ -12,9 +12,8 @@ public class ClassData {
     private String[] interfaces;
     private String[] fields;
     private String[] methods;
-    private String[] providers;
-    private String[] clients;
-    private ArrayList<String> classNames;
+    private ArrayList<String> providers;
+    private ArrayList<String> clients;
 
     public ClassData(){
 
@@ -41,18 +40,13 @@ public class ClassData {
         return methods;
     }
 
-    public ArrayList<String> getClassNames() {
-        return classNames;
-    }
-
-    public String[] getProviders() {
+    public ArrayList<String> getProviders() {
         return providers;
     }
 
-    public String[] getClients() {
+    public ArrayList<String> getClients() {
         return clients;
     }
-
 
     /** Setters */
 
@@ -76,22 +70,17 @@ public class ClassData {
         this.methods = methods;
     }
 
-    public void setClassNames(ArrayList<String> classNames) {
-        this.classNames = classNames;
-    }
-
-    public void setProviders(String[] providers) {
+    public void setProviders(ArrayList<String> providers) {
         this.providers = providers;
     }
 
-    public void setClients(String[] clients) {
+    public void setClients(ArrayList<String> clients) {
         this.clients = clients;
     }
 
 
-
     public void printProviders(){
-        ArrayList<String> temp = getClassNames();
+        ArrayList<String> temp = getProviders();
         System.out.print("\nProviders: \n");
 
         if(temp!=null){
@@ -100,7 +89,22 @@ public class ClassData {
             }
         }
         else{
-            System.out.print("No classes declared.");
+            System.out.print("No providers.");
+        }
+
+    }
+
+    public void printClients(){
+        ArrayList<String> temp = getClients();
+        System.out.print("Clients: \n");
+
+        if(temp!=null){
+            for(String s: temp){
+                System.out.println("    "+s);
+            }
+        }
+        else{
+            System.out.print("No clients.");
         }
 
     }
@@ -128,7 +132,7 @@ public class ClassData {
         String[] interfaces = getInterfaces();
         if(interfaces!=null){
             for(String s: interfaces){
-                System.out.println("    "+s);
+                System.out.print(""+s);
             }
         }
         else if(interfaces.length==0||interfaces.equals("Object")){
@@ -137,9 +141,9 @@ public class ClassData {
 
     }
 
-    public void printSuperclass(){
+    public void printSuperclass() throws NullPointerException{
         System.out.print("\nSuperclass: ");
-        if(getSuperClassName().equals("java.lang.Object")){
+        if(getSuperClassName() == null){
             System.out.print("None");
         }
         else{
@@ -155,6 +159,7 @@ public class ClassData {
         printFields();
         printMethods();
         printProviders();
+        printClients();
 
     }
 
