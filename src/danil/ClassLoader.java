@@ -1,113 +1,99 @@
 package danil;
 
-import javax.xml.crypto.Data;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
 
+/**
+ * @author Danil Kolesnikov danil.kolesnikov@sjsu.edu
+ * CS 151 HW5 Fall 2017
+ */
+
+/**
+ * ClassLoader class is responsible for finding all of the .class files in the directory and storing it's info in a HashMap of the DataMap class
+ */
+
 public class ClassLoader {
 
-    /** Constructor */
-    ClassLoader(){
-        initList();
-    }
+    /* Empty Constructor */
+    ClassLoader(){}
 
-    //static private HashMap<String,ClassData> map = new HashMap<>();
-    private int numberOfClasses;
-    private ArrayList<String> classes = new ArrayList<>();
-
-    // First element needs to null for Command Line interface
-    private void initList(){
-            classes.add(0,null);
-    }
-
-    /** Getters */
-    public ArrayList<String> getClassNames(){
-        return classes;
-    }
-
-    /** Setters */
-    public void setNumberOfClasses(int i){
-        this.numberOfClasses = i-1;
-    }
-
-
-    private void setClassNameTag(int i, String nameTag){
-        classes.add(i,nameTag);
-    }
-
-    // Main method that loads a package
-    public void loadPackage(String path) throws IOException, ClassNotFoundException {
+    // Main method that loads all .class files and fills up a HashMap
+    public void loadPackage(String path) {
 
         File f = new File(path);
-        int i = 1;
 
+        // Filter files in the directory based on .class extension
         FilenameFilter classFilter = new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 return name.toLowerCase().endsWith(".class");
             }
         };
 
-        // Go through class files and remove .class extension; Fill up ArrayList with class names
-        for ( File file : f.listFiles(classFilter) ) {
-            //System.out.println(i+". "+file.getName().replace(".class", ""));
-            String fileName = file.getName().replace(".class", "");
-            setClassNameTag(i,fileName);
-            i++;
+        // .class files were found
+        if(f.listFiles(classFilter).length!=0){
+
+            // The order of these functions matter!
+
+            // Traverse files with .class extension and fill up HashMap with key as names and null as values
+            for(File file: f.listFiles(classFilter)){
+                String tempName = file.getName().replace(".class", "");
+                DataMap.getMap().put(tempName,null);
+            }
+
+            DataMap.fillClassNames(); // Very important to fill ClassNames Array before setting up providers and clients
+
+            // Build preliminary HashMap: No clients
+            for(File file: f.listFiles(classFilter)){
+                String fileName = file.getName().replace(".class", "");
+
+                Class c = loadClass(fileName,path);
+                String className = loadName(c);
+                String superClassName = loadSuperClassName(c);
+                ArrayList<String> classInterface = loadInterfaces(c);
+                String[] classFields = loadFields(c);
+                String[] classMethods = loadMethods(c);
+                ArrayList<String> providers = loadProviders(c);
+                ClassData newClass = new ClassData(className,superClassName,classInterface,classFields,classMethods,providers);
+                DataMap.getMap().put(className,newClass); // put it in the map
+
+            }
+
+            // Iterate HashTable and insert clients for each object
+            for (Map.Entry<String, ClassData> entry : DataMap.getMap().entrySet()) { // traverse HashMap to get every ClassData
+                ArrayList<String> clients = loadClients(entry.getValue()); // Create and load clients list
+                entry.getValue().setClients(clients); // add clients list to the ClassData object
+            }
         }
-        setNumberOfClasses(i);
-
-        // Build preliminary HashMap: No clients
-        for(File file: f.listFiles(classFilter)){
-            String fileName = file.getName().replace(".class", "");
-
-            Class c = loadClass(fileName,path);
-            String className = loadName(c);
-            String superClassName = loadSuperClassName(c);
-            String[] classInterface = loadInterfaces(c);
-            String[] classFields = loadFields(c);
-            String[] classMethods = loadMethods(c);
-            ArrayList<String> providers = loadProviders(c);
-            generateClassData(className,superClassName,classInterface,classFields,classMethods, providers);
-        }
-
-        // Iterate HashTable and insert clients for each object
-        for (Map.Entry<String, ClassData> entry : DataMap.getMap().entrySet()) { // traverse HashMap to get every ClassData
-            ArrayList<String> clients = loadClients(entry.getValue()); // Create and load clients list
-            entry.getValue().setClients(clients); // add clients list to the ClassData object
+        // no .class files were found
+        else{
+            System.out.print("\nNo class files were found at the path! You can load an XML file through option 4.\n");
         }
     }
 
-    public void generateClassData(String name, String superClassName, String[] interfaces, String[] fields, String[] methods, ArrayList<String> classNames){
+    // loads the class from provided path
+    private Class loadClass(String name, String path) {
+        Class dull = null;
+        try{
+            String url = "file://"+path+"/";
+            URL classUrl = new URL(url);
+            URLClassLoader ucl = new URLClassLoader(new URL[]{classUrl});
+            return ucl.loadClass(name);
+        }
+        catch (ClassNotFoundException | MalformedURLException e){
+            System.out.print("No class files were found at the path! You can load an XML file through option 4");
+        }
 
-        ClassData newClass = new ClassData();
-        newClass.setName(name);
-        newClass.setSuperClassName(superClassName);
-        newClass.setInterfaces(interfaces);
-        newClass.setFields(fields);
-        newClass.setMethods(methods);
-        newClass.setProviders(classNames);
-
-        DataMap.getMap().put(name,newClass);
+        return dull;
     }
 
-
-    private Class loadClass(String name, String path) throws ClassNotFoundException, IOException {
-        String url = "file://"+path+"/";
-        //URL classUrl = new URL("file:///Users/danil/Documents/coding/TestPackageExplorer/out/production/TestPackageExplorer/");
-        URL classUrl = new URL(url);
-        //System.out.print(classUrl.toString());
-        URLClassLoader ucl = new URLClassLoader(new URL[]{classUrl});
-
-        return ucl.loadClass(name);
-    }
-
+    // Returns fields of a given class
     private String[] loadFields(Class c) {
 
         Field[] fields = c.getDeclaredFields();
@@ -120,6 +106,7 @@ public class ClassLoader {
         return results;
     }
 
+    // Returns methods of a given class
     private String[] loadMethods(Class c) {
         Method[] methods = c.getDeclaredMethods();
         String[] results = new String[methods.length];
@@ -133,15 +120,17 @@ public class ClassLoader {
         return results;
     }
 
+    // Returns a class name of a given class
     private String loadName(Class c){
         String result = c.getName();
         return result;
     }
 
+    // Returns a name of a super class of a given class
     private String loadSuperClassName(Class c) {
         String result = null;
         try {
-            result = c.getSuperclass().getName();
+            result = c.getSuperclass().getSimpleName();
         }
         catch (NullPointerException e){
         }
@@ -149,34 +138,33 @@ public class ClassLoader {
         return result;
     }
 
-    private String[] loadInterfaces(Class c){
+    // returns names of interfaces of a given class
+    private ArrayList<String> loadInterfaces(Class c){
         Class[] interfaces = c.getInterfaces();
-        String[] result = new String[interfaces.length];
+        ArrayList<String> result = new ArrayList<>(interfaces.length);
 
-        int i = 0;
         for(Class cl: interfaces){
-            result[i] = cl.getSimpleName();
-            i++;
+            result.add(cl.getName());
         }
         return result;
     }
 
-
+    // Returns a list of Providers of class c i.e. list of classes that class c depends on.
     private ArrayList<String> loadProviders(Class c){
-        ArrayList<String> classNames = getClassNames();
-        ArrayList<String> types = new ArrayList<>();
-        ArrayList<String> providers = new ArrayList<>();
+        ArrayList<String> classNames = DataMap.getClassNames(); // list of names of all .class files in dir
+        ArrayList<String> types = new ArrayList<>(); // list of types of every fields
+        ArrayList<String> providers = new ArrayList<>(); // return list
 
-        Field[] fields = c.getDeclaredFields();
+        Field[] fields = c.getDeclaredFields(); // list of fields of the of the class c
 
 
-        for(Field field: fields){ // Traverse through declared fields of class c: add each tyoe to types ArrayList
+        for(Field field: fields){ // Traverse through fields of class c: add the type of each field to types array list
             String type = field.getType().getSimpleName();
             types.add(type);
         }
 
-        for(String str: types){
-            for(String cl: classNames){
+        for(String str: types){ // Traverse types array list
+            for(String cl: classNames){ // Traverse list of class names: if type equals to the one of class names -> add to providers list
                 if(str.equals(cl)){
                     providers.add(str);
                 }
@@ -185,16 +173,18 @@ public class ClassLoader {
         return providers;
     }
 
+    // Returns a list of clients of ClassData object i.e. This will be a list of classes that depends on this class.
     private ArrayList<String> loadClients(ClassData classData){
-        String myName = classData.getName();
-        ArrayList<String> clients = new ArrayList<>();
 
-        for (Map.Entry<String, ClassData> entry : DataMap.getMap().entrySet()) { // traverse HashMap to get every ClassData
+        String myName = classData.getName(); // The name of the class
+        ArrayList<String> clients = new ArrayList<>(); // return list
 
-            String entryName = entry.getValue().getName();
-            ArrayList<String> providers = entry.getValue().getProviders();
+        for (Map.Entry<String, ClassData> entry : DataMap.getMap().entrySet()) { // traverse HashMap for every ClassData object
 
-            for(String provider: providers){
+            String entryName = entry.getValue().getName(); // temp variable to hold the name of the class
+            ArrayList<String> providers = entry.getValue().getProviders(); // temp variable to hold Providers of the current class
+
+            for(String provider: providers){ // traverse providers to see if there is a match for the current class name
                 if(provider.equals(myName)){
                     clients.add(entryName); // match
                 }

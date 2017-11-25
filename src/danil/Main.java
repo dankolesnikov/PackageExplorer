@@ -1,35 +1,47 @@
 package danil;
 
-import java.beans.ExceptionListener;
-import java.beans.XMLDecoder;
-import java.beans.XMLEncoder;
+import javax.xml.crypto.Data;
 import java.io.*;
 import java.util.*;
+
+
+/**
+ * @author Danil Kolesnikov danil.kolesnikov@sjsu.edu
+ * CS 151 HW5 Fall 2017
+ */
+
+
+/**
+ * Main class is responsible for command line interface i.e. starting point of the program.
+ */
 
 public class Main {
 
     static ClassLoader fl = new ClassLoader();
-    static ClassData lastData = null;
-   // private static ArrayList<String> classNames = DataMap.getClassNames();
-    private static String path;
+    static String lastFileName; // Contains the name of the class that was last accessed by the user. Used by saveFile() function
+    private static String path; // Contains the path name. Ex: /Users/danil/Documents/coding/TestPackageExplorer/out/production/TestPackageExplorer
     private static Serialization serializer = new Serialization();
 
+    // printClassFromMap gets a ClassData object from the HashMap and prints its content using object's internal function
     private static void printClassFromMap(String className){
         ClassData temp = DataMap.getMap().get(className);
-        lastData = temp;
+        lastFileName = temp.getName();
         temp.printClass();
     }
 
-    private static void load(ClassLoader loader, String path) throws IOException, ClassNotFoundException {
-        String test = "/Users/danil/Documents/coding/TestPackageExplorer/out/production/TestPackageExplorer";
-        if (path.equals("")) {
-            loader.loadPackage(test);
-            //loader.loadPackage(System.getProperty("user.dir")); // Load files from current directory
+    // Helper function that loads all class files into Hash Map of DataMap class using ClassLoader class.
+    private static void load(ClassLoader loader, String path)  {
+        //String test = "/Users/danil/Documents/coding/TestPackageExplorer/out/production/TestPackageExplorer";
+
+        if (path.equals(System.getProperty("user.dir"))) {
+            //loader.loadPackage(test);
+            loader.loadPackage(System.getProperty("user.dir")); // Load files from current directory
         } else {
             loader.loadPackage(path); // Load Files from the argument
         }
     }
 
+    // helper function to print Main menu contents
     private static void printMainMenu(){
         System.out.print("\n*** Package Explorer: Main Menu ***");
         System.out.print("\n-----------------------------------");
@@ -37,6 +49,7 @@ public class Main {
         System.out.print("\n\nEnter your choice(1-4) or q to quit the program: ");
     }
 
+    // Goes through the array list of Class names in DataMap function and prints out all class names
     private static void printClasses(){
         System.out.print("\nList of classes: ");
         System.out.print("\n----------------\n");
@@ -49,41 +62,65 @@ public class Main {
         System.out.printf("\n\nEnter (1-%d) to view details or m for main menu: ",DataMap.getClassNames().size()-1);
     }
 
+    // Prints class information from DataMap hash map based on the numerical input from the user
     private static void printClass(String index){
         int i = Integer.parseInt(index);
-        String className = DataMap.getClassNames().get(i);
-        printClassFromMap(className);
-        System.out.print("Enter s to save or m for Main Menu: ");
+        try {
+            String className = DataMap.getClassNames().get(i);
+            printClassFromMap(className);
+            System.out.print("\nEnter s to save or m for Main Menu: ");
+        }
+        catch (IndexOutOfBoundsException | NullPointerException e){
+            System.out.println("\nThis class doesn't exist. Try again!");
+            printClasses();
+            subMenu();
+        }
+
     }
 
-    private static void saveFile() throws IOException {
-        if(lastData!=null){
-            serializer.serializeOneToXML(lastData);
-            System.out.printf("\n\nSaved class information as %s.xml\n\n",lastData.getName());
+    // saveFile() function saves the Class Data object from the Hash Map in DataMap class with key value of lastFileName to an XML file in the current directory
+    private static void saveFile() {
+            serializer.serializeOneToXML(lastFileName);
+            System.out.printf("\n\nSaved class information as %s.xml",lastFileName);
             System.out.print("\nFile was written in "+path);
             printMainMenu();
+    }
+
+    // saveAllClasses saves the HashMap object from the DataMap class to an XML file
+    private static void saveAllClasses() {
+        System.out.print("Enter a file name(without extension): ");
+        Scanner readerB = new Scanner(System.in);
+        String name = readerB.next();
+        serializer.serializeMapToXML(name); // Serialize the HashMap object in XML file
+        System.out.printf("\nSaved all classes information as %s.xml",name);
+        System.out.printf("\nFile was written in %s\n\n",path);
+        printMainMenu();
+    }
+
+    // loadSavedFile() function asks for the name of the xml file to load; tries to load it and if the file not - an error message will be displayed
+    private static void loadSavedFile() {
+        System.out.print("Enter a file name to load or m for main menu.");
+        System.out.print("\nFile name (no need to provide .xml extension): ");
+        Scanner readerB = new Scanner(System.in);
+        String name = readerB.next();
+
+        if(name.equals("m")){
         }
         else{
-            System.out.print("First choose the file to save!");
+            try {
+                serializer.deserializeMapFromXML(name);
+                String fullName = name+".xml";
+                System.out.printf("\nFile %s was successfully loaded. Explore!\n",fullName);
+                printMainMenu();
+            }
+            catch (IOException e){
+                System.out.println("\nFile not found! Try again: ");
+                loadSavedFile();
+            }
         }
     }
 
-    private static void saveAllClasses() throws IOException {
-        System.out.print("Enter a file name: ");
-        Scanner readerB = new Scanner(System.in);
-        String name = readerB.next();
-        serializer.serializeMapToXML(name);
-        printMainMenu();
-    }
-
-    private static void loadSavedFile() throws IOException {
-        System.out.print("Enter a file name to load. No need to provide .xml extension: ");
-        Scanner readerB = new Scanner(System.in);
-        String name = readerB.next();
-        serializer.deserializeFromXML(name);
-        printMainMenu();
-    }
-
+    // Helper function to print out a sub menu after all classes were displayed
     private static void subMenu(){
         Scanner readerB = new Scanner(System.in);
         String input = readerB.next();
@@ -91,21 +128,28 @@ public class Main {
         switch (input){
             case "m": printMainMenu();
                 break;
+            case "s": saveFile();
+                break;
             default : printClass(input);
                 break;
         }
     }
 
-
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
+    // pathSetter sets a variable path to the correct input
+    private static void pathSetter(String[] args){
         if(args.length != 1){
-            path = "";
+            path = System.getProperty("user.dir"); // empty argument
         }
         else{
             path = args[0];
         }
-        load(fl, path);
-        DataMap.fillClassNames();
+    }
+
+
+    public static void main(String[] args) {
+
+        pathSetter(args); // Set the name of the current path based on the first argument
+        load(fl, path); // Load all classes in the path directory in the Hash Map of DataMap class
         printMainMenu();
 
         while(true){
@@ -122,15 +166,15 @@ public class Main {
                     printClasses();
                     subMenu();
                     break;
-                case "3": saveAllClasses();
+                case "3": saveAllClasses(); // Save a HashMap object into an XML file
                     break;
-                case "4": loadSavedFile();
+                case "4": loadSavedFile(); // Load a HashMap object of all classes from the current directory
                     break;
-                case "s": saveFile();
+                case "s": saveFile(); // Saves a ClassData object from HashMap into XML file
                     break;
-                case "m": printMainMenu();
+                case "m": printMainMenu(); // Prints main menu
                     break;
-                case "q": return;
+                case "q": return; // exit application
             }
         }
     }

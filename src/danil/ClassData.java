@@ -3,22 +3,41 @@ package danil;
 import java.util.ArrayList;
 
 /**
- * Created by danil on 11/21/17.
+ * @author Danil Kolesnikov danil.kolesnikov@sjsu.edu
+ * CS 151 HW5 Fall 2017
  */
+
+/**
+ * ClassData contains a model of any particular .class file with th following info: Name, List of fields, List of methods, name of the super class, list of interfaces, list of providers, list of clients
+ */
+
 public class ClassData {
 
     private String name;
     private String superClassName;
-    private String[] interfaces;
+    private ArrayList<String> interfaces;
     private String[] fields;
     private String[] methods;
     private ArrayList<String> providers;
     private ArrayList<String> clients;
 
+
+    // Very important to have a empty constructor for XMLEncoder
     public ClassData(){
 
     }
-    /** Getters */
+
+    /*  Constructor doesn't have clients! */
+    public ClassData(String name, String superClassName, ArrayList<String> interfaces, String[] fields, String[] methods, ArrayList<String> providers){
+        this.name = name;
+        this.superClassName = superClassName;
+        this.interfaces = interfaces;
+        this.fields = fields;
+        this.methods = methods;
+        this.providers = providers;
+    }
+
+    /* Getters */
 
     public String getName() {
         return name;
@@ -28,7 +47,7 @@ public class ClassData {
         return superClassName;
     }
 
-    public String[] getInterfaces() {
+    public ArrayList<String> getInterfaces() {
         return interfaces;
     }
 
@@ -58,7 +77,7 @@ public class ClassData {
         this.superClassName = superClassName;
     }
 
-    public void setInterfaces(String[] interfaces) {
+    public void setInterfaces(ArrayList<String> interfaces) {
         this.interfaces = interfaces;
     }
 
@@ -83,13 +102,14 @@ public class ClassData {
         ArrayList<String> temp = getProviders();
         System.out.print("\nProviders: \n");
 
-        if(temp!=null){
+
+        if(!temp.isEmpty()){
             for(String s: temp){
                 System.out.println("    "+s);
             }
         }
         else{
-            System.out.print("No providers.");
+            System.out.print("    No providers.\n");
         }
 
     }
@@ -98,13 +118,13 @@ public class ClassData {
         ArrayList<String> temp = getClients();
         System.out.print("Clients: \n");
 
-        if(temp!=null){
+        if(!temp.isEmpty()){
             for(String s: temp){
                 System.out.println("    "+s);
             }
         }
         else{
-            System.out.print("No clients.");
+            System.out.print("    No clients.\n");
         }
 
     }
@@ -129,14 +149,14 @@ public class ClassData {
 
     public void printInterfaces(){
         System.out.print("\nInterfaces: ");
-        String[] interfaces = getInterfaces();
-        if(interfaces!=null){
+        ArrayList<String> interfaces = getInterfaces();
+        if(!interfaces.isEmpty()){
             for(String s: interfaces){
                 System.out.print(""+s);
             }
         }
-        else if(interfaces.length==0||interfaces.equals("Object")){
-            System.out.print("None");
+        else{
+            System.out.print("No interfaces.");
         }
 
     }
