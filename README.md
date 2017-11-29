@@ -1,5 +1,5 @@
 # Package Explorer
-> PackageExplorer program allows you to get information about java classes in a specified directory.
+> Allows you to get information about java classes in a specified directory.
 
 ![](header.png)
 
@@ -15,16 +15,17 @@ The program allows saving individual/all class files in XML by serializing with 
 
 Terminal:
 
-Open the folder containing jars and run:
+Open the folder containing jar and run:
 
 ```sh
-java -jar PackageExploere.jar /Users/danil/Desktop/SomeJavaProject/out
+cd PackageExplorer/out/artifacts/PackageExplorer_jar
+java -jar PackageExplorer.jar /Users/danil/MyJavaClassFilesAreHere
 ```
-If the first argument is empty, program will search for .class files in the current directory.
+If the first argument is empty, the program will search for .class files in the current directory.
  
 ## Meta
 
-Please feel free to reach to me :)
+Please feel free to reach out:)
 
 Danil Kolesnikov – danil.kolesnikov@sjsu.edu
 
